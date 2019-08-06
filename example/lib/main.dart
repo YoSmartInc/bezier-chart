@@ -1,5 +1,8 @@
 import 'package:bezier_chart/bezier_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' as intl;
+
+import 'sample10.dart';
 
 void main() => runApp(MyApp());
 
@@ -95,6 +98,30 @@ class MyHomePage extends StatelessWidget {
                 sample7(context),
               ),
             ),
+            ListTile(
+              title: Text("Sample 8"),
+              subtitle: Text("Hourly Chart"),
+              onTap: () => _onTap(
+                context,
+                sample8(context),
+              ),
+            ),
+            ListTile(
+              title: Text("Sample 9"),
+              subtitle: Text("BezierChartScale.WEEKLY same day"),
+              onTap: () => _onTap(
+                context,
+                sample9(context),
+              ),
+            ),
+            ListTile(
+              title: Text("Sample 10"),
+              subtitle: Text("Async Custom Chart - Number"),
+              onTap: () => _onTap(
+                context,
+                Sample10(),
+              ),
+            ),
           ],
         ),
       ),
@@ -136,6 +163,7 @@ Widget sample1(BuildContext context) {
               width: MediaQuery.of(context).size.width * 0.9,
               child: BezierChart(
                 bezierChartScale: BezierChartScale.CUSTOM,
+                selectedValue: 30,
                 xAxisCustomValues: const [0, 5, 10, 15, 20, 25, 30, 35],
                 footerValueBuilder: (double value) {
                   return "${formatAsIntOrDouble(value)}\ndays";
@@ -164,6 +192,7 @@ Widget sample1(BuildContext context) {
                   showVerticalIndicator: true,
                   verticalIndicatorFixedPosition: false,
                   displayYAxis: true,
+                  stepsYAxis: 10,
                   backgroundGradient: LinearGradient(
                     colors: [
                       Colors.red[300],
@@ -175,7 +204,7 @@ Widget sample1(BuildContext context) {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
-                  snap: false,
+                  snap: true,
                 ),
               ),
             ),
@@ -283,10 +312,8 @@ Widget sample2(BuildContext context) {
 Widget sample3(BuildContext context) {
   final fromDate = DateTime(2019, 05, 22);
   final toDate = DateTime.now();
-
   final date1 = DateTime.now().subtract(Duration(days: 2));
   final date2 = DateTime.now().subtract(Duration(days: 3));
-
   return Center(
     child: Container(
       color: Colors.red,
@@ -296,7 +323,18 @@ Widget sample3(BuildContext context) {
         fromDate: fromDate,
         bezierChartScale: BezierChartScale.WEEKLY,
         toDate: toDate,
+        onIndicatorVisible: (val) {
+          print("Indicator Visible :$val");
+        },
+        onDateTimeSelected: (datetime) {
+          print("selected datetime: $datetime");
+        },
         selectedDate: toDate,
+        //this is optional
+        footerDateTimeBuilder: (DateTime value, BezierChartScale scaleType) {
+          final newFormat = intl.DateFormat('dd/MM');
+          return newFormat.format(value);
+        },
         series: [
           BezierLine(
             label: "Duty",
@@ -314,6 +352,7 @@ Widget sample3(BuildContext context) {
         ],
         config: BezierChartConfig(
           verticalIndicatorStrokeWidth: 3.0,
+          pinchZoom: false,
           verticalIndicatorColor: Colors.black26,
           showVerticalIndicator: true,
           verticalIndicatorFixedPosition: false,
@@ -656,9 +695,12 @@ Widget sample7(BuildContext context) {
                   ),
                 ],
                 config: BezierChartConfig(
+                  displayLinesXAxis: true,
+                  startYAxisFromNonZeroValue: true,
                   bubbleIndicatorColor: Colors.white.withOpacity(0.9),
                   footerHeight: 40,
                   displayYAxis: true,
+                  stepsYAxis: 15,
                   backgroundGradient: LinearGradient(
                     colors: [
                       Colors.red[300],
@@ -677,6 +719,133 @@ Widget sample7(BuildContext context) {
           ),
         ),
       ],
+    ),
+  );
+}
+
+//SAMPLE 8 Hourly Chart
+Widget sample8(BuildContext context) {
+  final fromDate = DateTime.now().subtract(Duration(hours: 50));
+  final toDate = DateTime.now();
+
+  final date1 = toDate.subtract(Duration(hours: 2));
+  final date2 = toDate.subtract(Duration(hours: 3));
+
+  final date3 = toDate.subtract(Duration(hours: 10));
+  final date4 = toDate.subtract(Duration(hours: 15));
+
+  final date5 = toDate.subtract(Duration(hours: 19));
+  final date6 = toDate.subtract(Duration(hours: 26));
+
+  return Center(
+    child: Container(
+      color: Colors.red,
+      height: MediaQuery.of(context).size.height / 2,
+      width: MediaQuery.of(context).size.width,
+      child: BezierChart(
+        bezierChartScale: BezierChartScale.HOURLY,
+        fromDate: fromDate,
+        toDate: toDate,
+        selectedDate: toDate,
+        series: [
+          BezierLine(
+            label: "Duty",
+            data: [
+              DataPoint<DateTime>(value: 0, xAxis: date1),
+              DataPoint<DateTime>(value: 50, xAxis: date2),
+              DataPoint<DateTime>(value: 100, xAxis: date3),
+              DataPoint<DateTime>(value: 100, xAxis: date4),
+              DataPoint<DateTime>(value: 40, xAxis: date5),
+              DataPoint<DateTime>(value: 47, xAxis: date6),
+            ],
+          ),
+        ],
+        config: BezierChartConfig(
+          verticalIndicatorStrokeWidth: 3.0,
+          verticalIndicatorColor: Colors.black26,
+          showVerticalIndicator: true,
+          verticalIndicatorFixedPosition: false,
+          bubbleIndicatorTitleStyle: TextStyle(
+            color: Colors.blue,
+          ),
+          bubbleIndicatorLabelStyle: TextStyle(
+            color: Colors.red,
+          ),
+          displayYAxis: true,
+          stepsYAxis: 25,
+          backgroundGradient: LinearGradient(
+            colors: [
+              Colors.red[300],
+              Colors.red[400],
+              Colors.red[400],
+              Colors.red[500],
+              Colors.red,
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+          footerHeight: 35.0,
+        ),
+      ),
+    ),
+  );
+}
+
+//Example of the problem with BezierChartScale.WEEKLY
+Widget sample9(BuildContext context) {
+  int dateInt1 = 1562013034796;
+  int dateInt2 = 1562079398067;
+  final fromDate = DateTime.fromMillisecondsSinceEpoch(dateInt1);
+  final toDate = DateTime.fromMillisecondsSinceEpoch(dateInt2);
+  final DateTime date1 = DateTime.fromMillisecondsSinceEpoch(dateInt1);
+  final DateTime date2 = DateTime.fromMillisecondsSinceEpoch(dateInt2);
+  //final date1 = DateTime.now().subtract(Duration(days: 2));
+  //final date2 = DateTime.now().subtract(Duration(days: 3));
+  return Center(
+    child: Container(
+      color: Colors.red,
+      height: MediaQuery.of(context).size.height / 2,
+      width: MediaQuery.of(context).size.width,
+      child: BezierChart(
+        fromDate: fromDate,
+        bezierChartScale: BezierChartScale.WEEKLY,
+        toDate: toDate,
+        onIndicatorVisible: (val) {
+          print("Indicator Visible :$val");
+        },
+        onDateTimeSelected: (datetime) {
+          print("selected datetime: $datetime");
+        },
+        selectedDate: toDate,
+        //this is optional
+        footerDateTimeBuilder: (DateTime value, BezierChartScale scaleType) {
+          final newFormat = intl.DateFormat('dd/MM');
+          return newFormat.format(value);
+        },
+        series: [
+          BezierLine(
+            label: "Duty",
+            /*  onMissingValue: (dateTime) {
+              if (dateTime.day.isEven) {
+                return 10.0;
+              }
+              return 5.0;
+            },*/
+            data: [
+              DataPoint<DateTime>(value: 10, xAxis: date1),
+              DataPoint<DateTime>(value: 50, xAxis: date2),
+            ],
+          ),
+        ],
+        config: BezierChartConfig(
+          verticalIndicatorStrokeWidth: 3.0,
+          pinchZoom: false,
+          verticalIndicatorColor: Colors.black26,
+          showVerticalIndicator: true,
+          verticalIndicatorFixedPosition: false,
+          backgroundColor: Colors.red,
+        ),
+      ),
     ),
   );
 }

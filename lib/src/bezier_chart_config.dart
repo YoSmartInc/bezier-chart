@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 /// Type of Bezier line Chart
 enum BezierChartScale {
+  HOURLY,
   WEEKLY,
   WEEKLYTRULY,
   MONTHLY,
@@ -26,6 +27,15 @@ class BezierChartConfig {
   ///Color of the bubble indicator, it's white by default
   final Color bubbleIndicatorColor;
 
+  ///TextStyle for the title displayed inside the bubble indicator
+  final TextStyle bubbleIndicatorTitleStyle;
+
+  ///TextStyle for the value displayed inside the bubble indicator
+  final TextStyle bubbleIndicatorValueStyle;
+
+  ///TextStyle for the label displayed inside the bubble indicator
+  final TextStyle bubbleIndicatorLabelStyle;
+
   ///Color of the background of the chart
   final Color backgroundColor;
 
@@ -34,6 +44,11 @@ class BezierChartConfig {
 
   ///`true` if you want to display the value of the Y axis, [false] by default
   final bool displayYAxis;
+
+  ///If [displayYAxis] is true, then you can set a positive value to display the steps of Y axis values
+  ///e.g 1: stepsYAxis : 5 ,  if your maxValue is 100, then the Y values should be: [0,5,10,15 .... 100]
+  ///e.g 2: stepsYAxis : 10 , if your maxValue is 100, then the Y values should be: [10,20,30,40 .... 100]
+  final int stepsYAxis;
 
   ///`true` if you want to start the values of Y axis from the minimum value of your Y values.
   final bool startYAxisFromNonZeroValue;
@@ -60,6 +75,12 @@ class BezierChartConfig {
   ///If the `contentWidth` is upper than the current width then the content will be scrollable (only valid for `bezierChartScale` = `CUSTOM`)
   final double contentWidth;
 
+  ///`true` if you want to display a vertical line on each X data point, it only works when there is one `BezierLine`.
+  final bool displayLinesXAxis;
+
+  ///Color for the vertical line in each X point, only works when `displayLinesXAxis` is true
+  final Color xLinesColor;
+
   BezierChartConfig({
     this.verticalIndicatorStrokeWidth = 2.0,
     this.verticalIndicatorColor = Colors.black,
@@ -75,7 +96,25 @@ class BezierChartConfig {
     this.pinchZoom = true,
     this.bubbleIndicatorColor = Colors.white,
     this.backgroundGradient,
-    this.verticalIndicatorFixedPosition = true,
+    this.verticalIndicatorFixedPosition = false,
     this.startYAxisFromNonZeroValue = true,
+    this.displayLinesXAxis = false,
+    this.stepsYAxis,
+    this.xLinesColor = Colors.grey,
+    this.bubbleIndicatorLabelStyle = const TextStyle(
+      color: Colors.grey,
+      fontWeight: FontWeight.w700,
+      fontSize: 9,
+    ),
+    this.bubbleIndicatorTitleStyle = const TextStyle(
+      color: Colors.grey,
+      fontWeight: FontWeight.w600,
+      fontSize: 9.5,
+    ),
+    this.bubbleIndicatorValueStyle = const TextStyle(
+      color: Colors.black,
+      fontWeight: FontWeight.bold,
+      fontSize: 11,
+    ),
   });
 }
