@@ -1198,6 +1198,12 @@ class _BezierChartPainter extends CustomPainter {
                 axisX = xAxisDataPoints[i].value;
                 break;
               }
+            }else if(bezierChartScale == BezierChartScale.WEEKLYTRULY){
+              if (areEqualDatesIncludingDay(dateTime, dp.xAxis)) {
+                value = dp.value;
+                axisX = xAxisDataPoints[i].value;
+                break;
+              }
             } else {
               if (areEqualDates(dateTime, dp.xAxis)) {
                 value = dp.value;
@@ -1769,3 +1775,5 @@ bool areEqualDatesIncludingHour(DateTime dateTime1, DateTime dateTime2) =>
     dateTime1.month == dateTime2.month &&
     dateTime1.day == dateTime2.day &&
     dateTime1.hour == dateTime2.hour;
+bool areEqualDatesIncludingDay(DateTime dateTime1, DateTime dateTime2) =>
+(dateTime1.difference(dateTime2).inHours.abs()<24);
