@@ -1105,7 +1105,10 @@ class _BezierChartPainter extends CustomPainter {
         if (dp.value > y) y = dp.value;
       }
     }*/
-    if (maxYValue == 0.0) return 1.0;
+    // if (maxYValue == 0.0) return 1.0;
+    if(maxYValue == 0.0 && minYValue >-1.0){
+      return 1.0;
+    }
     return maxYValue - (config.startYAxisFromNonZeroValue ? minYValue : 0.0);
   }
 
