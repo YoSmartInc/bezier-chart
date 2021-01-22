@@ -261,9 +261,9 @@ class BezierChartState extends State<BezierChart>
 
     if (_lastValueSnapped != value && widget.config.snap) {
       if (isIOS) {
-        HapticFeedback.heavyImpact();
+        // HapticFeedback.heavyImpact();
       } else {
-        Feedback.forTap(context);
+        // Feedback.forTap(context);
       }
       _lastValueSnapped = value;
     }
